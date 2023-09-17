@@ -1,0 +1,44 @@
+
+### PRDODUCT ###
+POST http://localhost:3000/product/ 
+    Content-Type: application/json
+
+    {
+        "name": "Super Litterbox 2K23",
+        "price":300,
+        "desc": "The this years latest in litterbox technology!",
+        "image":"image link coming soon",
+        "createdAt":"2023-01-08",
+        "tags":["cat","litterbox"]
+    
+    }
+
+### ORDER ###
+
+POST http://localhost:3000/order/ 
+    Content-Type: application/json
+
+    {
+        "cFirstname": "Bob",
+        "cLastname":"Dylan",
+        "cPhone": 132123321,
+        "cAdress":[{
+            "street":"frontendstreet 22",
+            "city": "Fullstackville",
+            "zipcode":12345
+        }],
+        "products":[{
+            "name":"Super Litterbox 3000",
+            "price": 500
+        },
+        {
+            "name":"Super Litterbox 2K23",
+            "price":300
+        }],
+        "totalCost":800,
+        "deliveryOption": "Postnord",
+        "freeShipping": "true",
+        "shipped": false,
+        "paymentOption": "CARD"
+    
+    }
