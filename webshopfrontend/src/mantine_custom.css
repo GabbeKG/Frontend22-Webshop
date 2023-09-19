@@ -1,0 +1,8 @@
+.mantine-Carousel-indicator{
+background-color: brown !important;
+}
+.indicator {
+    width: rem(12px);
+    height: rem(4px);
+    transition: width 250ms ease;
+}
