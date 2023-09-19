@@ -26,19 +26,21 @@ export default function GetLatestProducts(props:Props){
 
                     <Carousel.Slide>
                         <Card shadow="sm"  radius="md" >
-      <Card.Section component="a" href="https://mantine.dev/">
-        <Image
-          src={p.image}
-          height={160}
-          alt="Norway"
-          /><br/>
-          {p.name} {p.price} SEK<br/>
-          <Button>Order Now!</Button>
-      </Card.Section>
-        </Card>
-          </Carousel.Slide>
+                            <Card.Section component="a" href="https://mantine.dev/">
+                                <Image
+                                    src={p.image}
+                                    height={160}
+                                    alt="Norway"
+                                />
+                                <br/>
+                                    {p.name} {p.price} SEK
+                                <br/>
+                                <Button>Order Now!</Button>
+                            </Card.Section>
+                        </Card>
+                    </Carousel.Slide>
                         ))}
-                    </Carousel>
+            </Carousel>
             
     
         </div>
