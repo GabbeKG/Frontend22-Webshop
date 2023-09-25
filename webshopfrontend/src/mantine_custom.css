@@ -1,8 +1,54 @@
 .mantine-Carousel-indicator{
-background-color: brown !important;
+background-color: rgb(42, 157, 165) !important;
 }
 .indicator {
     width: rem(12px);
     height: rem(4px);
     transition: width 250ms ease;
+}
+.mantine-Carousel-control{
+    background-color: rgb(26, 108, 184, 0.5) !important;
+}
+.gridLabels{
+    background-color: antiquewhite;
+    background-image: url('../public/20230811_094713.jpg');
+}
+
+.mantine-Card-root, .mantine-Paper-root{
+  
+    
+    margin: 0 auto;
+}
+.mantine-Image-root{
+    
+}
+.mantine-Carousel-container{
+    height: inherit;
+}
+th{
+    text-align:center !important;
+}
+.latest{
+    
+  }
+
+#navbar button{
+    float:right;
+    background-color: rgb(78, 160, 103) !important;
+    
+    
+}
+#navbar{
+    text-align: left;
+}
+#logo{
+    height: 32px;
+    background-color: antiquewhite;
+    border-radius:50% ;
+    padding: 5px;
+}
+
+#navlist{
+    margin-top: 2rem;
+    margin-left: 5rem;
 }

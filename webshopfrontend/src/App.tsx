@@ -1,8 +1,17 @@
 import { useState, useEffect } from 'react'
-import { MantineProvider } from '@mantine/core';
+import { AppShell, MantineProvider } from '@mantine/core';
 import './App.css'
+import {
+  Route,
+  RouterProvider,
+  createBrowserRouter,
+  createRoutesFromElements,
+} from "react-router-dom";
 import GetProducts from './GetProducts';
 import GetLatestProducts from './LatestProducts';
+import { Header } from './Header';
+import {Checkout} from './Checkout';
+import { CollapseDesktop } from './AppShell';
 
 export interface NewProduct{
   name: string;
@@ -40,11 +49,9 @@ function App() {
   return (
     <>
     <MantineProvider>
-
-    <GetLatestProducts products={products}/>
+    <CollapseDesktop/>
     </MantineProvider>
-    <br/>
-      <GetProducts products={products}/>
+   
     </>
   )
 }

@@ -4,12 +4,12 @@ POST http://localhost:3000/product/
     Content-Type: application/json
 
     {
-        "name": "Catbarrel",
-        "price":1299,
-        "desc": "The latest in catbarrel technology!",
-        "image":"image link coming soon",
-        "createdAt":"2023-09-17",
-        "tags":["cat","scratch"]
+        "name": "Whiskas 3.9KG",
+        "price":208,
+        "desc": "Fooder from Whiskas.",
+        "image":"https://images-eu.ssl-images-amazon.com/images/I/61STdNV9bfL._AC_UL600_SR600,600_.jpg",
+        "createdAt":"2023-09-21",
+        "tags":["cat","fooder","food"]
     
     }
 

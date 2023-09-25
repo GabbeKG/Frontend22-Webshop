@@ -19,9 +19,13 @@
     "@mantine/nprogress": "^7.0.0",
     "@tabler/icons-react": "^2.34.0",
     "dayjs": "^1.11.9",
+    "embla-carousel-autoplay": "^8.0.0-rc14",
     "embla-carousel-react": "^7.1.0",
     "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react-dom": "^18.2.0",
+    "react-icons": "^4.11.0",
+    "react-router-dom": "^6.16.0",
+    "sass": "^1.67.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.15",
