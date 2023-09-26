@@ -27,5 +27,19 @@ orderRouter
             console.log(error)
         }
     })
+orderRouter
+    .patch('/:id', async function (req, res) {
+        const orderId = { _id: req.body._id };
+        const updateData={shipped:req.body.shipped}
+         try {
+            const order= await OrderModel.findByIdAndUpdate(orderId, updateData, {
+                new:true
+            });
+            
+            res.json(order)
+        } catch (error) {
+            console.log(error)
+        }
+    })
 
     module.exports = orderRouter;

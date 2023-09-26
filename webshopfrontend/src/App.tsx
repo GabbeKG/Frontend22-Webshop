@@ -1,16 +1,7 @@
 import { useState, useEffect } from 'react'
-import { AppShell, MantineProvider } from '@mantine/core';
+import {  MantineProvider } from '@mantine/core';
 import './App.css'
-import {
-  Route,
-  RouterProvider,
-  createBrowserRouter,
-  createRoutesFromElements,
-} from "react-router-dom";
-import GetProducts from './GetProducts';
-import GetLatestProducts from './LatestProducts';
-import { Header } from './Header';
-import {Checkout} from './Checkout';
+
 import { CollapseDesktop } from './AppShell';
 
 export interface NewProduct{
@@ -21,31 +12,30 @@ export interface NewProduct{
   createdAt:Date;
   tags?:[];
 }
+export interface AllOrders{
+  fName: string,
+    lName: string,
+    adress: [{
+        street: string,
+        city: string,
+        zipcode:number
+    }],
+    products: [],
+    totalCost: number,
+    deliveryOption: string,
+    freeShipping: boolean,
+    shipped: boolean,
+    paymentOption:string
+}
+export interface Order extends AllOrders{
+  _id: string;
+}
 export interface Product extends NewProduct{
   _id:string;
 }
 function App() {
   
-  const [products, setProducts ]= useState<Product[]>([]);
-
-  const getProducts=()=>{
-    fetch("http://localhost:3000/product/")
-      .then((res)=>res.json())
-      .then((data: Product[])=>{
-        setProducts(data);
-      })
-      .catch((error)=>{
-        console.log(error);
-        throw new Error("Couldn't get products :(");
-
-        
-      });
-  };
-
-  useEffect(() => {
-    getProducts();
-  }, []);
-
+  
   return (
     <>
     <MantineProvider>

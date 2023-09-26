@@ -1,9 +1,9 @@
 import { useDisclosure } from '@mantine/hooks';
-import { AppShell, Burger, Group, Text, Button, Modal } from '@mantine/core';
+import { AppShell, Burger, Group, Text, Button,Modal } from '@mantine/core';
 import '@mantine/core/styles.css'
 import GetLatestProducts from './LatestProducts';
 import { useContext, useEffect,useState } from 'react';
-import { Product } from './App';
+import { Order, Product } from './App';
 import {CartContext} from './CartContext';
 import GetProducts from './GetProducts';
 import Catbox from '/icons8-animal-creatype-flat-32.png';
@@ -11,16 +11,28 @@ import { BrowserRouter as Router,Route,Link,Routes } from 'react-router-dom';
 import { Checkout } from './Checkout';
 import CatLogo from '/icons8-cat-64.png';
 import { Content } from './Content';
+import Admin from './Admin';
 
 
 
 export function CollapseDesktop() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
-  const [products, setProducts ]= useState<Product[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [orders, setOrders] = useState<Order[]>([]);
 
     const { cart, toggleCart, isCartOpen, totalProducts } = useContext(CartContext);
-
+  const getOrders = () => {
+    fetch("http://localhost:3000/order/")
+      .then((res) => res.json())
+      .then((data: Order[]) => {
+        setOrders(data)
+      })
+      .catch((error) =>{
+        console.log(error);
+        throw new Error("Couldn't get any orders :(")
+        })
+}
   const getProducts=()=>{
     fetch("http://localhost:3000/product/")
       .then((res)=>res.json())
@@ -37,6 +49,7 @@ export function CollapseDesktop() {
   };
 
   useEffect(() => {
+    getOrders();
     getProducts();
   }, []);
 
@@ -74,13 +87,15 @@ export function CollapseDesktop() {
         <Text component={Link} variant='link' to='/checkout'>Checkout</Text>
     </div>
         
-      </AppShell.Navbar>
+        <Button component={Link} variant='link' to='/admin'><Text >Admin</Text></Button>
+        </AppShell.Navbar>
       <AppShell.Main style={{width:'1280px', margin:'0 auto'}}>
       <Routes>
         <Route path='/' element={<Content/>}></Route>
         <Route path='/products' element={<GetProducts products={products}/>}></Route>
         <Route path='/latest' element={<GetLatestProducts products={products}/>}></Route>
-        <Route path='/checkout' element={<Checkout/>}></Route>
+            <Route path='/checkout' element={<Checkout />}></Route>
+            <Route path='/admin' element={<Admin products={products} orders={orders}/>}></Route>
         
       </Routes>
     </AppShell.Main>
