@@ -2,7 +2,8 @@ const mongoose=require ('mongoose');
 
 const orderSchema= new mongoose.Schema({
     cFirstname:{type: String, require:true},
-    cLastname:{type: String, require:true},
+        cLastname: { type: String, require: true },
+    cEmail:{type:String, require: true},
     cPhone:{type:Number, require:true},
     cAdress:[{
             street:{type:String, require:true},

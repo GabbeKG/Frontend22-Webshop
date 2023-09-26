@@ -38,10 +38,10 @@ return(
             <Table.Thead>{tHead}</Table.Thead>
             <Table.Tbody>{props.products.map((p)=>(
 
-                <Table.Tr key={p._id} onClick={()=>handleRowClick(p)}>
-                <Table.Td><img className="listImg" src={p.image}></img></Table.Td>
-      <Table.Td>{p.name}</Table.Td>
-      <Table.Td>{p.price} SEK</Table.Td>
+                <Table.Tr key={p._id}>
+                <Table.Td onClick={()=>handleRowClick(p)}><img className="listImg" src={p.image}></img></Table.Td>
+      <Table.Td onClick={()=>handleRowClick(p)}>{p.name}</Table.Td>
+      <Table.Td onClick={()=>handleRowClick(p)}>{p.price} SEK</Table.Td>
       <Table.Td><Button onClick={()=>addToCart(p)}>Add to Cart</Button></Table.Td>
     </Table.Tr>
     ))}

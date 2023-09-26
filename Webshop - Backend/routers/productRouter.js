@@ -28,6 +28,28 @@ productRouter
             console.log(error);
         }
     })
+productRouter
+    .delete("/:id", async function (req, res) {
+        const productId = { _id: req.body._id };
+        try {
+            
+            const deletedProduct = await ProductModel.findByIdAndDelete(productId);
+            
+            if (!deletedProduct) {
+                // If the product with the provided id was not found, return an error response
+                return res.status(404).json({ error: 'Product not found' });
+            }
+            
+            // If the product was successfully deleted, return a success response
+            res.status(200).json({ message: 'Product deleted successfully' });
+        
+    } catch (error) {
+        // Handle any errors that occur during the delete operation
+        console.error(error);
+        res.status(500).json({ error: 'Internal server error' });
+    }     
+        
+    })
 
 
 

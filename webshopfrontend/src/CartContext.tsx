@@ -12,6 +12,7 @@ export interface ContextValue{
   toggleCart: () => void;
   isCartOpen: boolean;
   totalCost:()=>number;
+  totalProducts:()=>number;
 }
 export const CartContext = createContext<ContextValue>({
     cart:[],
@@ -20,6 +21,7 @@ export const CartContext = createContext<ContextValue>({
     toggleCart:()=>{},
     isCartOpen:false,
     totalCost:()=>0,
+    totalProducts:()=>0,
 });
 
 interface Props{
@@ -66,9 +68,16 @@ export default function CartProvider({ children }: Props) {
       })
       return total;
   };
+  const totalProducts=()=>{
+    let total=0;
+    cart.forEach((products)=>{
+      total+=products.quantity
+    })
+    return total;
+  }
     return (
       <CartContext.Provider
-        value={{ cart, addToCart, removeFromCart, isCartOpen, toggleCart, totalCost }}
+        value={{ cart, addToCart, removeFromCart, isCartOpen, toggleCart, totalCost, totalProducts }}
       >
         {children}
       </CartContext.Provider>

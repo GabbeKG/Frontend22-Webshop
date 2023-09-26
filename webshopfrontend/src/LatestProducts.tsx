@@ -1,20 +1,10 @@
 import { Carousel } from '@mantine/carousel';
-import { Card, Image, Text, Badge, Button, Group } from '@mantine/core';
+import { Card, Image, Text, Button } from '@mantine/core';
 import '@mantine/carousel/styles.css';
-import EmblaCarousel, {
-    EmblaCarouselType,
-    EmblaOptionsType,
-    EmblaPluginType,
-    EmblaEventType,
-  } from 'embla-carousel';
-  
-import Autoplay from 'embla-carousel-autoplay';
-import { IconArrowRight, IconArrowLeft } from '@tabler/icons-react';
-import { rem } from '@mantine/core';
 import { Product } from "./App";
 import './HeaderSimple.module.css';
 import './mantine_custom.css';
-import {useContext, useRef} from 'react';
+import {useContext} from 'react';
 import {CartContext} from './CartContext';
 
 interface Props{

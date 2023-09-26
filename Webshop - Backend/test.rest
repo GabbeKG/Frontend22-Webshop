@@ -43,6 +43,7 @@ POST http://localhost:3000/order/
     {
         "cFirstname": "Bob",
         "cLastname":"Dylan",
+        "cEmail":"123@email.com",
         "cPhone": 132123321,
         "cAdress":[{
             "street":"frontendstreet 22",
@@ -59,7 +60,7 @@ POST http://localhost:3000/order/
         }],
         "totalCost":800,
         "deliveryOption": "Postnord",
-        "freeShipping": "true",
+        "freeShipping": true,
         "shipped": false,
         "paymentOption": "CARD"
     
@@ -73,4 +74,12 @@ PUT http://localhost:3000/order/:_id
     {
         "_id":"65070af7184e3b53308db034",
         "shipped":"false"
+    }
+###
+
+DELETE http://localhost:3000/product/:_id
+    Content-Type: application/json
+
+    {
+        "_id":"650c79b094cf84765093d6cd"
     }
