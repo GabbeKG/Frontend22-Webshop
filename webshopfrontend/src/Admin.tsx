@@ -17,13 +17,17 @@ export default function Admin(props:Props) {
         setSelectedProduct(product);
         open();
     };
-    const updateShipping = async (orderId: string) => {
-        try {
+    const updateShipping = async (order:Order) => {
+        console.log(order);
+        console.log(order.products);
+       
+            
             const updateData = {
-                
-                shipping:true
+                _id:order._id,
+                shipped:true,
             }
-        const update = await fetch(`http://localhost:3000/order/${orderId}`, {
+        try {
+        const update = await fetch(`http://localhost:3000/order/${order._id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -31,19 +35,22 @@ export default function Admin(props:Props) {
             body: JSON.stringify(updateData)
         });
         if (update.ok) {
-            console.log('Order :'+orderId+' has been updated successfully')
+            console.log('Order :' + order._id + ' has been updated successfully')
+            console.log(updateData.shipped);
+            
         }else {
-      console.error('Error updating field:', update.statusText);
+            console.error('Error updating field:', update.statusText);
+        }
+    } catch (error) {
+        console.error('Error updating field:', error);
     }
-  } catch (error) {
-    console.error('Error updating field:', error);
-  }
-    }
-    
 
-    
-     const pHead=(
-        <Table.Tr>
+}
+
+
+
+const pHead=(
+    <Table.Tr>
             <Table.Th></Table.Th>
             <Table.Th>Product name</Table.Th>
             <Table.Th>Price</Table.Th>
@@ -61,8 +68,7 @@ export default function Admin(props:Props) {
     )
 
   return (
-      <Tabs color="teal" variant="pills" defaultValue="gallery">
-          
+      <Tabs color="teal" variant="pills" defaultValue="gallery">          
       <Tabs.List>
         <Tabs.Tab value="products" leftSection={<IconPhoto style={iconStyle} />}>
                   Products
@@ -107,7 +113,7 @@ export default function Admin(props:Props) {
                           <Table.Tr key={o._id}>
                               <Table.Td>{ o._id}</Table.Td>
                               <Table.Td>{o.shipped? 'Shipped':'Pending' }</Table.Td>
-                              <Table.Td><Button disabled={o.shipped? true:false} onClick={()=>{updateShipping(o._id)}}>Ship order</Button></Table.Td>
+                              <Table.Td><Button disabled={o.shipped? true:false} onClick={()=>{updateShipping(o)}}>Ship order</Button></Table.Td>
                           </Table.Tr>
                       )
                           

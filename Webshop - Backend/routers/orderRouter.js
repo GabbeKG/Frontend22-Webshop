@@ -16,30 +16,20 @@ orderRouter
     })
 orderRouter
     .put("/:id", async function(req,res){
-        const orderId={_id:req.body._id};
+        const orderId=req.body._id;
         try {
-            const order= await OrderModel.findOneAndUpdate(orderId, {shipped:req.body.shipped}, {
+            const order= await OrderModel.findByIdAndUpdate(orderId, {shipped:true}, {
+            
                 new:true
             });
+            if (!order) {
+                return res.status(404).json({ error: 'Order not found' });
+              }
             
-            res.json(order)
+            res.json(order);
+            console.log(order);
         } catch (error) {
             console.log(error)
         }
     })
-orderRouter
-    .patch('/:id', async function (req, res) {
-        const orderId = { _id: req.body._id };
-        const updateData={shipped:req.body.shipped}
-         try {
-            const order= await OrderModel.findByIdAndUpdate(orderId, updateData, {
-                new:true
-            });
-            
-            res.json(order)
-        } catch (error) {
-            console.log(error)
-        }
-    })
-
     module.exports = orderRouter;

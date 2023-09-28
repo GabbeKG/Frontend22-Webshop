@@ -72,8 +72,8 @@ PUT http://localhost:3000/order/:_id
     Content-Type: application/json
 
     {
-        "_id":"65070af7184e3b53308db034",
-        "shipped":"false"
+        "_id":"65132d30815d4e1fe8c66cd7",
+        "shipped":true
     }
 ###
 
