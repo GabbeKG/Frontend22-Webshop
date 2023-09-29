@@ -29,11 +29,12 @@ productRouter
         }
     })
 productRouter
-    .delete("/:id", async function (req, res) {
-        const productId = { _id: req.body._id };
+    .delete("/:id", async(req, res)=> {
+        const productId = { _id: req.params.id };
+        console.log(productId)
         try {
             
-            const deletedProduct = await ProductModel.findByIdAndDelete(productId);
+            const deletedProduct = await ProductModel.findByIdAndRemove(productId);
             
             if (!deletedProduct) {
                 // If the product with the provided id was not found, return an error response

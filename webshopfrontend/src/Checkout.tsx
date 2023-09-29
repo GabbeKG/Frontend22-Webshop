@@ -3,15 +3,18 @@ import {
     Stepper,
     Button,
     Group,
-    Checkbox,
     TextInput,
     Box,
     Radio,
     Table,
-    Accordion 
+    Accordion, 
+    List,
+    Title,
+    Flex,
+    ListItem
 } from '@mantine/core';
 
-import { FormProvider, useFormContext,useCustomerForm } from './FormContext';
+import { FormProvider,useCustomerForm } from './FormContext';
 import { CartContext } from './CartContext';
 import Catbox from '/icons8-cat-in-a-box-96.png'
 
@@ -19,17 +22,28 @@ import Catbox from '/icons8-cat-in-a-box-96.png'
 
 
 export function Checkout() {
-    const { cart, totalCost,removeFromCart } = useContext(CartContext);
-    
+    const { cart, totalCost,removeFromCart,addToCart,reduceOneFromCart, emptyCart } = useContext(CartContext);
+    const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
+    const [orderId, setOrderId] = useState(null);
     const tHead = (
         <Table.Tr>
             <Table.Th></Table.Th>
             <Table.Th>Product name</Table.Th>
             <Table.Th>Price</Table.Th>
             <Table.Th>Quantity</Table.Th>
-            <Table.Th>{ totalCost() } SEK</Table.Th>
+            <Table.Th>Total: { totalCost() } SEK</Table.Th>
         </Table.Tr>
-    );    
+    );
+    const reviewCart=cart.map((p) => (
+        <Table.Tr key={p._id}>
+            <Table.Td><img className="listImg" src={p.image}></img></Table.Td>
+            <Table.Td>{p.name}</Table.Td>
+            <Table.Td >{p.price} x {p.quantity} SEK</Table.Td>
+<Table.Td><Button style={{marginRight:'1rem'}} onClick={()=>reduceOneFromCart(p)}>-</Button>{p.quantity}<Button style={{marginLeft:'1rem'}} onClick={()=>addToCart(p)}>+</Button></Table.Td>
+<Table.Td><Button onClick={()=>removeFromCart(p._id)}>Remove from cart</Button></Table.Td>
+        </Table.Tr>
+    ))
     const currCart=cart.map((p) => (
                                 <Table.Tr key={p._id}>
                                     <Table.Td><img className="listImg" src={p.image}></img></Table.Td>
@@ -39,8 +53,26 @@ export function Checkout() {
             <Table.Td><Button onClick={()=>removeFromCart(p._id)}>Remove from cart</Button></Table.Td>
                                 </Table.Tr>
                             ))
-                           
-    //const { useCustomerForm } = useContext(useFormContext);
+    
+    const deliveryFee = () => {
+        if (totalCost() >= 500 || selectedDeliveryMethod==='PostNord') {
+            return 0
+        }
+        if (totalCost() < 500 && selectedDeliveryMethod === 'Instabox'||totalCost() < 500 && selectedDeliveryMethod === 'Budbee') {
+            if (selectedDeliveryMethod === 'Instabox') {
+                return 59;
+            } {
+                return 89;
+            }
+        }
+
+    }
+    const totalCostWithDelivery = () => {
+        const tc = totalCost();
+        const fee = deliveryFee() ?? 0;
+        return tc + fee;
+    }
+    
     const [orderData, setOrderData] = useState({
     customerInfo: {
       fName: '',
@@ -57,23 +89,9 @@ export function Checkout() {
     });
     const handleSubmit = async () => {
   try {
-    // Collect customer information from form context
+    
     const customerInfo = cForm.values;
 
-    // Collect selected delivery method
-    const deliveryMethod = orderData.deliveryMethod;
-
-    // Collect selected payment method
-    const paymentMethod = orderData.paymentMethod;
-
-    // Collect cart items
-    const cartItems = cart.map((item) => ({
-      name: item.name,
-      price: item.price,
-      quantity: item.quantity,
-    }));
-
-    // Create the order object
     const order = {
         "cFirstname": customerInfo.fName,
         "cLastname": customerInfo.lName,
@@ -85,12 +103,12 @@ export function Checkout() {
             "zipcode":parseInt(customerInfo.zipcode)
         }],
         "totalCost":totalCost(),
-        "deliveryOption": orderData.deliveryMethod,
+        "deliveryOption": selectedDeliveryMethod,
         "shipped": false,
-      "paymentOption": orderData.paymentMethod,
+      "paymentOption": selectedPaymentMethod,
       "products":cart,
     };
-    console.log(order)
+   
     // Send a POST request to the server with the order data using fetch
     const response = await fetch('http://localhost:3000/order/', {
       method: 'POST',
@@ -103,6 +121,8 @@ export function Checkout() {
     if (response.ok) {
       const responseData = await response.json();
         console.log('Order placed successfully:', responseData);
+        setOrderId(responseData._id);
+        emptyCart();
         nextStep();
         
     } else {
@@ -152,7 +172,7 @@ const cForm=useCustomerForm ({
 
 }); 
     const isCartEmpty = cart.length > 0;
-    const isLastStep = active === 5;
+    
     const isPayStep = active === 4;
     useEffect(() => {
     // Reset the active step when the component unmounts
@@ -177,11 +197,14 @@ const cForm=useCustomerForm ({
             <img src={Catbox} style={{height:'96px',width:'auto', margin:'0 auto'}}></img>
             </>
                 ) : (
-                    <Table>
+                                <Table>
+                                    <Table.Thead>
+
                         { tHead }
+                                    </Table.Thead>
                             <Table.Tbody>
                                 
-                            {currCart}
+                            {reviewCart}
                             </Table.Tbody>
                             
                         </Table>
@@ -233,11 +256,7 @@ const cForm=useCustomerForm ({
             placeholder="Enter your zip code..."
             {...cForm.getInputProps('zipcode')}
             />
-            <Checkbox
-            mt="md"
-            label="I agree to sell my privacy"
-            {...cForm.getInputProps('termsOfService', { type: 'checkbox' })}
-            />
+            
 
         
         </form>
@@ -249,27 +268,28 @@ const cForm=useCustomerForm ({
                         <Radio.Group 
                             name='delivery'
                             label='Which delivery service do you prefer?'
+                            value={selectedDeliveryMethod}
+                            onChange={(value) => {                                
+                                setSelectedDeliveryMethod(value);
+                                console.log(value)
+                            }}
                             >
 
                             <Group mt='md' style={{display:'flex', flexDirection:'column'}}>
                                 <ul>
                                     <li>
                                         <Radio value='PostNord' label={`Postnord (0 SEK)`}
-                                            checked={orderData.deliveryMethod=== 'PostNord'}
-                                            onChange={()=> setOrderData({ ...orderData, deliveryMethod:'PostNord'})}
+                                            checked={selectedDeliveryMethod=== 'PostNord'}
                                         />
                                     </li>
                                     <li>
                                         <Radio value='Instabox' label={`Instabox (${totalCost()>500? '0':'59'} SEK)`}
-                                            checked={orderData.deliveryMethod === 'Instabox'}
-                                            onChange={()=> setOrderData({ ...orderData, deliveryMethod:'PostNord'})}
+                                            checked={selectedDeliveryMethod === 'Instabox'}
                                         />
                                     </li>
                                     <li>
-
-                                        <Radio value='Budbee ' label='Budbee (40 SEK)'
-                                        checked={orderData.deliveryMethod==='Budbee'}
-                                        onChange={()=> setOrderData({...orderData, deliveryMethod:'PostNord'})}
+                                        <Radio value='Budbee' label={`Budbee (${totalCost()>500? '0':'89'} SEK)`}
+                                        checked={selectedDeliveryMethod==='Budbee'}
                                         />
                                     </li>
                             </ul>
@@ -278,51 +298,91 @@ const cForm=useCustomerForm ({
 
         </Stepper.Step>
         
-        <Stepper.Step label="Review you order" >
+                    <Stepper.Step label="Review you order" >
+                        <Box display={Flex}>
+
+                        <div style={{display:'flex', textAlign:'left'}} >
+                            <List listStyleType='none' withPadding>
+                                <List.Item>{cForm.values.fName }</List.Item>
+                                <List.Item>{cForm.values.lName }</List.Item>
+                                <List.Item>{cForm.values.cPhone }</List.Item>
+                                <List.Item>{cForm.values.street }</List.Item>
+                                <List.Item>{cForm.values.zipcode }</List.Item>
+                                <List.Item>{cForm.values.city }</List.Item>
+                            </List>
+                                <List listStyleType='none' withPadding style={{marginLeft:'5rem'}}>
+                                    
+                                    <List.Item>Delivery option: {selectedDeliveryMethod}</List.Item>
+                                    </List>
+                        </div>
+                            <Group>
+
+                            </Group>
+                                
+                        </Box>
+                            
                         <Table>
+                            <Table.Thead>
                             <Table.Tr>                                
                             <Table.Th>
-                                Image
+                                
                             </Table.Th>
                             <Table.Th>
                                 Product
                                 </Table.Th>
                                 <Table.Th>
-                                Quantity
-                                </Table.Th>
-                                <Table.Th>
                                 Cost
                                 </Table.Th>
                                 <Table.Th>
-                                
+                                Quantity
+                                </Table.Th>
+                                <Table.Th>                                
                             </Table.Th>
                             </Table.Tr>
+                            </Table.Thead>
                             <Table.Tbody>
-
+                                {reviewCart}
                             </Table.Tbody>
+                            <Table.Tfoot>
+                                <Table.Tr>
+                                    <Table.Th></Table.Th>
+                                    <Table.Th></Table.Th>
+                                    <Table.Th></Table.Th>
+                                    <Table.Th>Delivery fee: {deliveryFee() } SEK</Table.Th>
+                                    <Table.Th>{ totalCostWithDelivery() } SEK (moms:{totalCost()/1.25} SEK)</Table.Th>
+                                </Table.Tr>
+                            </Table.Tfoot>
         </Table>
                     </Stepper.Step>
                     <Stepper.Step label="Payment method" >
-                        <Radio.Group>
+                        <Radio.Group
+                            value={selectedPaymentMethod}
+                            onChange={(value) => {
+                             
+                                setSelectedPaymentMethod(value);
+                                console.log(value)
+                            }}
+                        >
 
-                            <Radio value='Swish' label='Swish' style={{ width: '100%' }} checked={orderData.paymentMethod==="Swish" } />
+                            <Radio value='Swish' label='Swish' style={{ width: '100%' }} checked={selectedPaymentMethod==="Swish" } />
                                     <form style={{  margin: '0 auto' }}>
                                         <Table>
                                             <Table.Tbody>
                                                 <Table.Tr>
-                                                    <Table.Td><TextInput value={cForm.values.cPhone}></TextInput></Table.Td>
+                                                    <Table.Td><TextInput {...cForm.getInputProps('cPhone')}></TextInput></Table.Td>
                                                 </Table.Tr>
                                             </Table.Tbody>
                                         
                                        
                                         </Table>
                                 </form>
-                                <Radio value='Card' label='Card' checked={orderData.paymentMethod==="Card" }/>
+                                <Radio value='Card' label='Card' checked={selectedPaymentMethod==="Card" }/>
                         </Radio.Group>
                         
         </Stepper.Step>
             <Stepper.Completed>
-                Thank you for your order!
+                        Thank you for your order!
+                        <Title>OrderID: { orderId}</Title>
                 </Stepper.Completed>
                 </Stepper>
                 {isPayStep &&(

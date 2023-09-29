@@ -12,7 +12,9 @@ export interface ContextValue{
   toggleCart: () => void;
   isCartOpen: boolean;
   totalCost:()=>number;
-  totalProducts:()=>number;
+  totalProducts: () => number;
+  reduceOneFromCart: (product: Product) => void;
+  emptyCart: () => void;
 }
 export const CartContext = createContext<ContextValue>({
     cart:[],
@@ -21,7 +23,9 @@ export const CartContext = createContext<ContextValue>({
     toggleCart:()=>{},
     isCartOpen:false,
     totalCost:()=>0,
-    totalProducts:()=>0,
+  totalProducts: () => 0,
+  reduceOneFromCart: () => { },
+  emptyCart: () => {},
 });
 
 interface Props{
@@ -54,7 +58,25 @@ export default function CartProvider({ children }: Props) {
         const updatedCart = [...cart, { ...product, quantity: 1 }];
         setCart(updatedCart);
       }
-    };
+  };
+  const reduceOneFromCart = (product: Product) => {
+    const productInCart =cart.find(
+      (cartProduct) => cartProduct._id === product._id && cartProduct.quantity!==1);
+    if (productInCart) {
+      const updatedCart = cart.map((cartProduct) => {
+        if (cartProduct._id === product._id) {
+          return { ...cartProduct, quantity: cartProduct.quantity - 1 }
+        } else {
+          return cartProduct;
+        }
+      });
+      setCart(updatedCart)
+    }else {
+      const updatedCart = cart.filter((p) => p._id !== product._id);
+      setCart(updatedCart);
+      
+    }
+  }
   
     const removeFromCart = (productId: string) => {
       const updatedCart = cart.filter((product) => product._id !== productId);
@@ -68,6 +90,9 @@ export default function CartProvider({ children }: Props) {
       })
       return total;
   };
+  const emptyCart = () => {
+    setCart([]);
+  }
   const totalProducts=()=>{
     let total=0;
     cart.forEach((products)=>{
@@ -77,7 +102,7 @@ export default function CartProvider({ children }: Props) {
   }
     return (
       <CartContext.Provider
-        value={{ cart, addToCart, removeFromCart, isCartOpen, toggleCart, totalCost, totalProducts }}
+        value={{ cart, addToCart,reduceOneFromCart, removeFromCart, isCartOpen, toggleCart, totalCost, totalProducts,emptyCart }}
       >
         {children}
       </CartContext.Provider>

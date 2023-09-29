@@ -1,22 +1,68 @@
-import { Tabs, rem, Table, Button } from '@mantine/core';
-import { IconPhoto, IconMessageCircle, IconSettings } from '@tabler/icons-react';
+import { Tabs, rem, Table, Button, Modal, Grid, Pill, Box, TextInput } from '@mantine/core';
+import { IconPhoto, IconMessageCircle,  } from '@tabler/icons-react';
 import { Order, Product } from './App';
 import { useDisclosure } from '@mantine/hooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useForm } from '@mantine/form';
+import GetProducts from './GetProducts';
+
+
 
 interface Props{
     products: Product[];
     orders: Order[];
+    getProducts: () => void;
+    getOrders: () => void;
 }
 export default function Admin(props:Props) {
     const iconStyle = { width: rem(12), height: rem(12) };
-    const [opened, {open, close}] =useDisclosure(false);
+    //const [opened, { open, close }] = useDisclosure(false);
+    const [addProductOpened, { addopen, addclose }] = useDisclosure(false);
     const [selectedProduct, setSelectedProduct] = useState<Product>();
-    const [selectedOrder, setSelectedOrder] = useState<Order>();
+    const [orders, setOrders] = useState();
+    const [openedAddProduct, { open: openAddProductModal, close: closeAddProductModal, toggle: toggleAddProductModal }] = useDisclosure(false);
+    const [openedUpdateProduct, { open: openUpdateProductModal, close: closeUpdateProductModal, toggle: toggleUpdateProductModal }] = useDisclosure(false);
+    
+    const handleNewProductModal = () => {
+        openAddProductModal();
+    }
     const handleProductRowClick = (product: Product) => {
         setSelectedProduct(product);
-        open();
+        openUpdateProductModal();
     };
+    const newProductForm = useForm({
+        initialValues: {
+            name: '',
+            price: 0,
+            desc: '',
+            image: '',
+        }
+    })
+    
+    const productForm = useForm({
+        initialValues: {
+            _id: selectedProduct?._id,
+            name: selectedProduct?.name,
+            price: selectedProduct?.price,
+            desc: selectedProduct?.desc,
+            image: selectedProduct?.image,
+            createdAt: selectedProduct?.createdAt,
+            tags: selectedProduct?.tags,
+        }
+    });
+    useEffect(() => {
+        productForm.setValues( {
+                _id: selectedProduct?._id,
+                name: selectedProduct?.name,
+                price: selectedProduct?.price,
+                desc: selectedProduct?.desc,
+                image: selectedProduct?.image,
+                createdAt: selectedProduct?.createdAt,
+                tags: selectedProduct?.tags,
+            
+        });
+      }, [selectedProduct]);
+
     const updateShipping = async (order:Order) => {
         console.log(order);
         console.log(order.products);
@@ -34,9 +80,15 @@ export default function Admin(props:Props) {
             },
             body: JSON.stringify(updateData)
         });
-        if (update.ok) {
+            if (update.ok) {
+                props.getOrders();
             console.log('Order :' + order._id + ' has been updated successfully')
             console.log(updateData.shipped);
+            setOrders((prevOrders) =>
+                prevOrders.map((o) =>
+                    o._id === order._id ? { ...o, shipped: true } : o
+                )
+            );
             
         }else {
             console.error('Error updating field:', update.statusText);
@@ -45,10 +97,99 @@ export default function Admin(props:Props) {
         console.error('Error updating field:', error);
     }
 
-}
+    }
+    const addProduct = async () => {
+        try {
+            const newProductData = {
+                name: newProductForm.values.name,
+                price: newProductForm.values.price,
+                desc: newProductForm.values.desc,
+                image: newProductForm.values.image,
+                createdAt: Date.now()
+            }
+            const response = await fetch(`http://localhost:3000/product`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+              body: JSON.stringify(newProductData),
+          });
+    
+          if (response.ok) {
+              console.log('Product added successfully');
+              props.getProducts();
+            // Close the modal or perform any other actions needed
+            close();
+          } else {
+            console.error('Error adding product:', response.statusText);
+          }
+        } catch (error) {
+            console.error('Error adding product:', error);
+          }
+    }
+    const updateProduct = async () => {
+        try {
+            
+          // Create an object with updated data
+          const updatedData = {
+            _id: productForm.values._id,
+            name: productForm.values.name,
+            price: productForm.values.price, // Ensure price is a number
+            desc: productForm.values.desc,
+            image: productForm.values.image,
+            tags:  productForm.values.tags??''.split(',').map((tag) => tag.trim()).filter(Boolean)
+            };
+            console.log(typeof productForm.values.tags);
+            
+    
+          // Make a PUT request to update the product
+          const response = await fetch(`http://localhost:3000/product/${productForm.values._id}`, {
+            method: 'PUT',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+              body: JSON.stringify(updatedData),
+          });
+    
+          if (response.ok) {
+            console.log('Product updated successfully');
+              // Close the modal or perform any other actions needed
+              props.getProducts();
+            close();
+          } else {
+            console.error('Error updating product:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Error updating product:', error);
+        }
+    };
+    const deleteProduct = async (product: Product) => {
+        console.log(product._id)
+        try {
+          const response = await fetch(`http://localhost:3000/product/${product._id}`, {
+              method: 'DELETE',
+              body: JSON.stringify({ _id:product._id }),
+          });
+      
+          if (response.ok) {
+            console.log('Product deleted successfully');
+            // Update your product list by removing the deleted product
+            
+          } else {
+            console.error('Error deleting product:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Error deleting product:', error);
+        }
+      };
 
-
-
+    useEffect(() => {
+        updateProduct();
+        props.getOrders;
+        props.getProducts;
+        props.orders;
+        props.products;
+},[])
 const pHead=(
     <Table.Tr>
             <Table.Th></Table.Th>
@@ -68,7 +209,7 @@ const pHead=(
     )
 
   return (
-      <Tabs color="teal" variant="pills" defaultValue="gallery">          
+      <Tabs color="teal" variant="pills" defaultValue="products" >          
       <Tabs.List>
         <Tabs.Tab value="products" leftSection={<IconPhoto style={iconStyle} />}>
                   Products
@@ -81,6 +222,7 @@ const pHead=(
 
       <Tabs.Panel value="products">
         Product management
+              <Button onClick={() => handleNewProductModal()}>Add product</Button>
               <Table>
                   <Table.Thead>
                       
@@ -88,18 +230,78 @@ const pHead=(
                   </Table.Thead>
                    <Table.Tbody>{props?.products?.map((p)=>(
 
-                <Table.Tr key={p._id}onClick={()=>handleProductRowClick(p)}>
+                <Table.Tr key={p._id}>
                 <Table.Td onClick={()=>handleProductRowClick(p)}><img className="listImg" src={p.image}></img></Table.Td>
       <Table.Td onClick={()=>handleProductRowClick(p)}>{p.name}</Table.Td>
       <Table.Td onClick={()=>handleProductRowClick(p)}>{p.price} SEK</Table.Td>
-                           <Table.Td>{p.desc}</Table.Td>
-                           <Table.Td>{p.createdAt.toString() }</Table.Td>
-                           <Table.Td>{p.tags?.map((t)=>(t+' '))}</Table.Td>
+                           <Table.Td onClick={()=>handleProductRowClick(p)}>{p.desc}</Table.Td>
+                           <Table.Td onClick={()=>handleProductRowClick(p)}>{p.createdAt?.toString() }</Table.Td>
+                           <Table.Td onClick={() => handleProductRowClick(p)}>{p.tags?.map((t) => (t + ' '))}</Table.Td>
+                           <Table.Td><Button onClick={()=>deleteProduct(p)}>Delete</Button></Table.Td>
     </Table.Tr>
     ))}
     
     </Table.Tbody>
-                  </Table>
+              </Table>
+              <Modal opened={openedAddProduct} onClose={closeAddProductModal} style={{ zIndex: 1500 }} size="70%">
+                  <Box maw={340} mx="auto">
+                      
+                      <form onSubmit={newProductForm.onSubmit(addProduct)}>
+                          <TextInput withAsterisk
+                              label="Product name" placeholder='name'
+                          {...newProductForm.getInputProps('name')}
+                          />
+                          <TextInput  withAsterisk
+                              label="Price"
+                              {...newProductForm.getInputProps('price')}
+                          />
+                          <TextInput withAsterisk
+                              label="Description"
+                              {...newProductForm.getInputProps('desc')}
+                          />
+                          <TextInput withAsterisk
+                              label="Image URL"
+                              {...newProductForm.getInputProps('image')}
+                          />
+                          <Button type='submit' >Add Product</Button>
+                      </form>
+                  </Box>
+              </Modal>
+              <Modal opened={openedUpdateProduct} onClose={closeUpdateProductModal} style={{zIndex:500}} size="70%" title="Update product">
+                  <Box maw={340} mx="auto">
+                      
+                  <form onSubmit={productForm.onSubmit(updateProduct)}>
+                  <TextInput
+          withAsterisk
+                              label="Product name"
+                              {...productForm.getInputProps('name')}
+                              
+                          />
+                           <TextInput
+          withAsterisk
+                              label="Price"
+                              {...productForm.getInputProps('price')}
+                          />
+                           <TextInput
+          withAsterisk
+                              label="Description"
+                              {...productForm.getInputProps('desc')}
+                          />
+                           <TextInput
+          withAsterisk
+                              label="Image URL"
+                              {...productForm.getInputProps('image')}
+                          />
+                          
+                           <TextInput
+          withAsterisk
+                              label="Tags"
+                              {...productForm.getInputProps('tags')}
+                          />
+                          <Button type='submit'>Save</Button>
+     </form>
+                  </Box>
+     </Modal>   
       </Tabs.Panel>
 
       <Tabs.Panel value="orders">
@@ -123,6 +325,7 @@ const pHead=(
               
       </Tabs.Panel>
 
-    </Tabs>
+      </Tabs>
+    
   );
 }
