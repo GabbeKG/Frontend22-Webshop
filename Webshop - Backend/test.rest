@@ -26,6 +26,14 @@ PUT http://localhost:3000/product/:id
 
 ###
 
+DELETE http://localhost:3000/product/65171ba74b15849fb40357a4
+        Content-Type: application/json
+
+{}
+      
+
+###
+
 GET http://localhost:3000/product/ 
     Content-Type: application/json
 

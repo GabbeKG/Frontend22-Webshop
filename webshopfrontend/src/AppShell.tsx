@@ -95,7 +95,7 @@ export function CollapseDesktop() {
         <Route path='/products' element={<GetProducts products={products}/>}></Route>
         <Route path='/latest' element={<GetLatestProducts products={products}/>}></Route>
             <Route path='/checkout' element={<Checkout />}></Route>
-            <Route path='/admin' element={<Admin products={products} orders={orders}/>}></Route>
+            <Route path='/admin' element={<Admin products={products} orders={orders} getProducts={getProducts} getOrders={getOrders}/>}></Route>
         
       </Routes>
     </AppShell.Main>

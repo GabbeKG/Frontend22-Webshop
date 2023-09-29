@@ -3,8 +3,7 @@ import {useContext, useState} from "react";
 import { CartContext } from "./CartContext";
 import { useDisclosure } from '@mantine/hooks';
 import {Button,Text, Grid, Pill, Table, Modal} from '@mantine/core';
-import Cart from "./Cart";
-import ProductView from "./ProductView";
+
 
 interface Props{
     products: Product[];
