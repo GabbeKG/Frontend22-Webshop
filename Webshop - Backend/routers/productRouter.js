@@ -20,7 +20,13 @@ productRouter
         const productId={_id:req.body._id};
         console.log(productId)
         try {
-            const product=await ProductModel.findOneAndUpdate(productId, {name:req.body.name, price:req.body.price},{
+            const product = await ProductModel.findOneAndUpdate(productId, {
+                name: req.body.name,
+                desc: req.body.desc,
+                price: req.body.price,
+                image: req.body.image,
+                tags: req.body.tags
+            }, {
                 new:true
             });
             res.json(product)
