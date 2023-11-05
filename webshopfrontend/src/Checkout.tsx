@@ -11,7 +11,9 @@ import {
     List,
     Title,
     Flex,
-    ListItem
+    ListItem,
+    Input,
+    Text
 } from '@mantine/core';
 
 import { FormProvider,useCustomerForm } from './FormContext';
@@ -21,9 +23,13 @@ import Catbox from '/icons8-cat-in-a-box-96.png'
 
 
 
+
 export function Checkout() {
     const { cart, totalCost,removeFromCart,addToCart,reduceOneFromCart, emptyCart } = useContext(CartContext);
     const [selectedDeliveryMethod, setSelectedDeliveryMethod] = useState('');
+    const [accordionValue, setAccordionValue] = useState<string>('Swish')
+    //TEST
+    
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('');
     const [orderId, setOrderId] = useState(null);
     const tHead = (
@@ -179,7 +185,19 @@ const cForm=useCustomerForm ({
     return () => {
       setActive(0);
     };
-  }, []); // Empty dependency array ensures this effect runs only once
+    }, []); // Empty dependency array ensures this effect runs only once
+    useEffect(() => {
+        if (accordionValue === 'Swish') {
+          setSelectedPaymentMethod('Swish');
+        } else if (accordionValue === 'Card') {
+          setSelectedPaymentMethod('Card');
+        }
+      }, [accordionValue]);
+
+    const handleAccordionChange = (value: string) => {
+        setAccordionValue(value);
+        console.log(value)
+      };
     
     
         
@@ -196,7 +214,9 @@ const cForm=useCustomerForm ({
             <h1>Your Cart is empty!</h1>
             <img src={Catbox} style={{height:'96px',width:'auto', margin:'0 auto'}}></img>
             </>
-                ) : (
+                        ) : (
+                                <div className='tableWrapper'>
+
                                 <Table>
                                     <Table.Thead>
 
@@ -208,6 +228,7 @@ const cForm=useCustomerForm ({
                             </Table.Tbody>
                             
                         </Table>
+                                </div>
                             )}
                     </Stepper.Step>
             <Stepper.Step label="Personal information" >
@@ -355,17 +376,15 @@ const cForm=useCustomerForm ({
         </Table>
                     </Stepper.Step>
                     <Stepper.Step label="Payment method" >
-                        <Radio.Group
-                            value={selectedPaymentMethod}
-                            onChange={(value) => {
-                             
-                                setSelectedPaymentMethod(value);
-                                console.log(value)
-                            }}
-                        >
-
-                            <Radio value='Swish' label='Swish' style={{ width: '100%' }} checked={selectedPaymentMethod==="Swish" } />
-                                    <form style={{  margin: '0 auto' }}>
+                        <form>
+                            
+                            <Accordion defaultValue={accordionValue} onChange={handleAccordionChange}>
+                            <Accordion.Item value='Swish'>
+                                <Accordion.Control>
+                                    <Text>Swish</Text>
+                                </Accordion.Control>
+                                <Accordion.Panel>
+                                <form style={{  margin: '0 auto' }}>
                                         <Table>
                                             <Table.Tbody>
                                                 <Table.Tr>
@@ -373,16 +392,33 @@ const cForm=useCustomerForm ({
                                                 </Table.Tr>
                                             </Table.Tbody>
                                         
-                                       
                                         </Table>
                                 </form>
-                                <Radio value='Card' label='Card' checked={selectedPaymentMethod==="Card" }/>
-                        </Radio.Group>
+                                </Accordion.Panel>
+                            </Accordion.Item>
+                            <Accordion.Item value='Card'>
+                                <Accordion.Control>
+                                    <Text>Card</Text>
+                                    </Accordion.Control>
+                               
+                                <Accordion.Panel>
+     <form>
+                                        <TextInput label="Name of card owner :" placeholder='Name of card owner...'></TextInput>
+                                        <TextInput label="Card No. :" placeholder='Enter you card number...'></TextInput>
+                                        <TextInput label="Valid until:" placeholder='MM/YY'></TextInput>
+                                        <TextInput label="CVV:" placeholder='Enter CVV'></TextInput>
+                                        
+                                    </form>
+                                </Accordion.Panel>
+                                </Accordion.Item>
+                    </Accordion>
+                    </form>
+                       
                         
         </Stepper.Step>
             <Stepper.Completed>
-                        Thank you for your order!
-                        <Title>OrderID: { orderId}</Title>
+                        <p>Thank you for your order!</p>
+                        <p>OrderID: { orderId}</p>
                 </Stepper.Completed>
                 </Stepper>
                 {isPayStep &&(
