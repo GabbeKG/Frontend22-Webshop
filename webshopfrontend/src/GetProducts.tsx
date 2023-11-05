@@ -32,11 +32,13 @@ export default function GetProducts(props:Props){
 return(
     <div id="Products">
         
-            <h2>Our products</h2>
+        <h2>Our products</h2>
+        <div className="tableWrapper">
+
         <Table>
             <Table.Thead>{tHead}</Table.Thead>
             <Table.Tbody>{props.products.map((p)=>(
-
+                
                 <Table.Tr key={p._id}>
                 <Table.Td onClick={()=>handleRowClick(p)}><img className="listImg" src={p.image}></img></Table.Td>
       <Table.Td onClick={()=>handleRowClick(p)}>{p.name}</Table.Td>
@@ -47,6 +49,7 @@ return(
     
     </Table.Tbody>
         </Table>
+    </div>
        
            <Modal opened={opened} onClose={close} style={{zIndex:500}} size="70%">
             <div>
@@ -55,7 +58,7 @@ return(
             <Grid.Col offset={1} span={19}>
                 <img style={{height:'380px', width:'auto', margin:'0 auto'}} src={selectedProduct?.image}></img>
             </Grid.Col>
-            <Grid.Col offset={4} span={5}>
+            <Grid.Col offset={1} span={19}>
 
                 <h2>{selectedProduct?.name}</h2>
 
