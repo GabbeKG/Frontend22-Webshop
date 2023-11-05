@@ -52,3 +52,65 @@ th{
     margin-top: 2rem;
     margin-left: 5rem;
 }
+.mantine-Table-tr{
+    max-height: 20rem;
+}
+.mantine-Accordion-content ul li{
+    background-color: white;
+}
+.mantine-Accordion-content,.mantine-Accordion-content ul,.mantine-Accordion-content ul li,.mantine-Accordion-content ul li li{
+    min-width: 20rem;
+    text-align: left;
+    margin:0;
+    padding: 0;
+}
+.mantine-Accordion-label{
+    min-width:20rem ;
+}
+@media screen {
+    main{
+        max-width: 100vw;
+    }
+    .mantine-AppShell-navbar{
+    max-width: 80vw;    
+    }
+    .mantine-Carousel-viewport{
+        max-width: 100vw;
+    }
+    .mantine-Card-root{
+        max-width: 100vw;
+        display: flex;
+        flex-direction: row;
+        max-height: 450px;
+        
+    }
+    .latest,.mantine-Carousel-container{
+        max-height: 450px;
+    }
+    .mantine-Modal-root,.mantine-Modal-inner{
+        --modal-size:100%;
+    }
+    .mantine-Modal-inner{
+        margin: auto;
+
+    }
+    .mantine-Grid-col img{
+        max-width: 15rem;
+        max-height: 15rem;
+    }
+    .mantine-Tabs-list{
+        justify-content: space-around !important;
+    }
+    .mantine-Table-table{
+        max-width: 80vw;
+        overflow-x: auto;
+    }
+    .mantine-Table-td, .mantine-Table-th{
+        min-width: 10rem;
+    }
+    .tableWrapper{
+        max-width: 100vw;
+        overflow-x: scroll;
+    }
+    
+}

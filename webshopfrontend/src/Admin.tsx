@@ -1,10 +1,10 @@
-import { Tabs, rem, Table, Button, Modal, Grid, Pill, Box, TextInput } from '@mantine/core';
+import { Tabs, rem, Table, Button, Modal,Box, TextInput, Accordion } from '@mantine/core';
 import { IconPhoto, IconMessageCircle,  } from '@tabler/icons-react';
 import { Order, Product } from './App';
 import { useDisclosure } from '@mantine/hooks';
 import { useEffect, useState } from 'react';
 import { useForm } from '@mantine/form';
-import GetProducts from './GetProducts';
+
 
 
 
@@ -16,8 +16,6 @@ interface Props{
 }
 export default function Admin(props:Props) {
     const iconStyle = { width: rem(12), height: rem(12) };
-    //const [opened, { open, close }] = useDisclosure(false);
-    const [addProductOpened, { addopen, addclose }] = useDisclosure(false);
     const [selectedProduct, setSelectedProduct] = useState<Product>();
     const [orders, setOrders] = useState();
     const [openedAddProduct, { open: openAddProductModal, close: closeAddProductModal, toggle: toggleAddProductModal }] = useDisclosure(false);
@@ -119,7 +117,7 @@ export default function Admin(props:Props) {
               console.log('Product added successfully');
               props.getProducts();
             // Close the modal or perform any other actions needed
-            close();
+            closeAddProductModal();
           } else {
             console.error('Error adding product:', response.statusText);
           }
@@ -174,7 +172,7 @@ export default function Admin(props:Props) {
           if (response.ok) {
             console.log('Product deleted successfully');
             // Update your product list by removing the deleted product
-            
+              props.getProducts();
           } else {
             console.error('Error deleting product:', response.statusText);
           }
@@ -203,6 +201,14 @@ const pHead=(
     const oHead = (
         <Table.Tr>
             <Table.Th>OrderId</Table.Th>
+            <Table.Th>Customer Name</Table.Th>
+            <Table.Th>Contact number</Table.Th>
+            <Table.Th>Email</Table.Th>
+            <Table.Th>Shipping adress</Table.Th>
+            <Table.Th>Delivery Method</Table.Th>
+            <Table.Th>Products</Table.Th>
+            <Table.Th>Total Cost</Table.Th>
+            <Table.Th>Paymentmethod</Table.Th>
             <Table.Th>Shipped</Table.Th>
             <Table.Th></Table.Th>
         </Table.Tr>
@@ -221,20 +227,35 @@ const pHead=(
       </Tabs.List>
 
       <Tabs.Panel value="products">
-        Product management
+        <p>Product management</p>
               <Button onClick={() => handleNewProductModal()}>Add product</Button>
-              <Table>
+              <div className='tableWrapper'>
+                  
+              <Table >
                   <Table.Thead>
                       
                   {pHead}
                   </Table.Thead>
                    <Table.Tbody>{props?.products?.map((p)=>(
-
-                <Table.Tr key={p._id}>
+                       
+                       <Table.Tr key={p._id} >
                 <Table.Td onClick={()=>handleProductRowClick(p)}><img className="listImg" src={p.image}></img></Table.Td>
       <Table.Td onClick={()=>handleProductRowClick(p)}>{p.name}</Table.Td>
       <Table.Td onClick={()=>handleProductRowClick(p)}>{p.price} SEK</Table.Td>
-                           <Table.Td onClick={()=>handleProductRowClick(p)}>{p.desc}</Table.Td>
+                           <Table.Td >
+                           <Accordion>
+                                      <Accordion.Item value='productList'>
+                                          
+                                      <Accordion.Control>
+                                          <p>Description</p>
+                                  </Accordion.Control>
+                                      <Accordion.Panel onClick={() => handleProductRowClick(p)}>
+                               {p.desc}
+                                              
+                                  </Accordion.Panel>
+                                      </Accordion.Item>
+                                  </Accordion>
+                           </Table.Td>
                            <Table.Td onClick={()=>handleProductRowClick(p)}>{p.createdAt?.toString() }</Table.Td>
                            <Table.Td onClick={() => handleProductRowClick(p)}>{p.tags?.map((t) => (t + ' '))}</Table.Td>
                            <Table.Td><Button onClick={()=>deleteProduct(p)}>Delete</Button></Table.Td>
@@ -243,6 +264,7 @@ const pHead=(
     
     </Table.Tbody>
               </Table>
+    </div>
               <Modal opened={openedAddProduct} onClose={closeAddProductModal} style={{ zIndex: 1500 }} size="70%">
                   <Box maw={340} mx="auto">
                       
@@ -263,7 +285,7 @@ const pHead=(
                               label="Image URL"
                               {...newProductForm.getInputProps('image')}
                           />
-                          <Button type='submit' >Add Product</Button>
+                          <Button style={{margin:"2rem auto"}} type='submit' >Add Product</Button>
                       </form>
                   </Box>
               </Modal>
@@ -305,7 +327,9 @@ const pHead=(
       </Tabs.Panel>
 
       <Tabs.Panel value="orders">
-              Order management
+              <p>Order management</p>
+              <div className='tableWrapper'>
+                  
               <Table><Table.Thead>
                   
                   {oHead}
@@ -313,15 +337,38 @@ const pHead=(
                   <Table.Tbody>
                       {props?.orders?.map((o) => (
                           <Table.Tr key={o._id}>
-                              <Table.Td>{ o._id}</Table.Td>
+                              <Table.Td>{o._id}</Table.Td>
+                              <Table.Td>{`${o.cLastname}, ${o.cFirstname}` }</Table.Td>
+                              <Table.Td>{"0" + o.cPhone}</Table.Td>
+                              <Table.Td>{o.cEmail }</Table.Td>
+                              <Table.Td>{ o.cAdress[0].street+", "+o.cAdress[0].zipcode+", "+ o.cAdress[0].city}</Table.Td>
+                              <Table.Td>{o.deliveryOption}</Table.Td>
+                              <Table.Td>
+                                  <Accordion>
+                                      <Accordion.Item value='productList'>
+                                          
+                                      <Accordion.Control>
+                                          Product list
+                                  </Accordion.Control>
+                                      <Accordion.Panel>
+                                              {o?.products?.map((p) => <ul><li><li>ProductID: {p._id}</li> <li>Product name: {p.name}</li><li>price: {p.price}</li></li>  </ul>)}
+                                          
+                                  </Accordion.Panel>
+                                      </Accordion.Item>
+                                  </Accordion>
+                                          </Table.Td>
+                              <Table.Td>{o.totalCost}</Table.Td>
+                              
+                              <Table.Td>{o.paymentOption }</Table.Td>
                               <Table.Td>{o.shipped? 'Shipped':'Pending' }</Table.Td>
                               <Table.Td><Button disabled={o.shipped? true:false} onClick={()=>{updateShipping(o)}}>Ship order</Button></Table.Td>
                           </Table.Tr>
                       )
-                          
+                      
                       )}
                   </Table.Tbody>
               </Table>
+                      </div>
               
       </Tabs.Panel>
 

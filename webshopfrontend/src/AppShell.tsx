@@ -81,7 +81,7 @@ export function CollapseDesktop() {
     <div id={'navlist'} style={{display:'flex', flexDirection:'column'}}>
 
         
-        <Text component={Link} variant='link' to='/'>Home</Text>
+        <Text component={Link} variant='link' to='/' >Home</Text>
         <Text component={Link} variant='link' to='/products'>Products</Text>
         <Text  component={Link} variant='link' to='/latest'>Latest</Text>
         <Text component={Link} variant='link' to='/checkout'>Checkout</Text>

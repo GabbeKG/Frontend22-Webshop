@@ -50,9 +50,9 @@ return(
        
            <Modal opened={opened} onClose={close} style={{zIndex:500}} size="70%">
             <div>
-
+            
             <Grid columns={20} style={{display:'flex'}}>
-            <Grid.Col offset={1} span={6}>
+            <Grid.Col offset={1} span={19}>
                 <img style={{height:'380px', width:'auto', margin:'0 auto'}} src={selectedProduct?.image}></img>
             </Grid.Col>
             <Grid.Col offset={4} span={5}>
@@ -72,7 +72,7 @@ return(
                 </div>
            <span>
             {selectedProduct?.tags?.map((t)=>(
-                <Pill style={{marginLeft:'0.3rem', backgroundColor:'rgb(42, 157, 165)', color:'#fff', fontSize:'14px'}}>{t}</Pill>
+                <Pill key={t} style={{marginLeft:'0.3rem', backgroundColor:'rgb(42, 157, 165)', color:'#fff', fontSize:'14px'}}>{t}</Pill>
                 ))}
                 </span> 
                 

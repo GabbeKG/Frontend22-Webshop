@@ -22,7 +22,7 @@ export default function GetLatestProducts(props:Props){
             <Carousel height={400} style={{flex:1}}            
             withIndicators            
             className='indicator'
-            slideGap={'xs'}
+            slideGap={{ xs: 'xs', sm: 'xs', md: 'lg' }}
             slideSize={{ base: '100%', sm: '50%', md: "33%"}}
             controlSize={50}
             loop
