@@ -67,7 +67,7 @@ th{
 .mantine-Accordion-label{
     min-width:20rem ;
 }
-@media screen {
+@media screen and (max-width:767px) {
     main{
         max-width: 100vw;
     }
